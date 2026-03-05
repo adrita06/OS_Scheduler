@@ -487,7 +487,7 @@ pcpu_boot_ap(uint32_t cpu_idx, void (*f)(void), uintptr_t stack_addr)
 	if (get_pcpu_boot_info(cpu_idx) == TRUE)
 		return 0;
 
-	extern void kern_init_ap(void);		/* defined in sys/kern/init.c */
+	extern void kern_init_ap(void (*)(void));		/* defined in sys/kern/init.c */
 	uint8_t *boot = (uint8_t *) PCPU_AP_START_ADDR;
 	*(uintptr_t *) (boot - 4) = stack_addr + PAGE_SIZE;
 	*(uintptr_t *) (boot - 8) = (uintptr_t) f;
