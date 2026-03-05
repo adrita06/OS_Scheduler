@@ -14,6 +14,9 @@ void tqueue_init(unsigned int mbi_addr);
 void tqueue_enqueue(unsigned int chid, unsigned int pid);
 unsigned int tqueue_dequeue(unsigned int chid);
 
+void ready_enqueue(unsigned int tid, unsigned int priority);  // ADD
+unsigned int ready_dequeue(void);                             // ADD
+
 unsigned int get_curid(void);
 void set_curid(unsigned int curid);
 

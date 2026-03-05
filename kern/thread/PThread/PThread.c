@@ -22,10 +22,6 @@ static spinlock_t sched_lk;
 
 unsigned int sched_ticks[NUM_CPUS];
 
-/* Forward declarations */
-void ready_enqueue(unsigned int tid, unsigned int priority);
-unsigned int ready_dequeue(void);
-
 void thread_init(unsigned int mbi_addr)
 {
     unsigned int i;
@@ -224,25 +220,3 @@ void thread_wakeup(void *chan)
     }
     spinlock_release(&sched_lk);
 }
-
-
-void thread_exit(void)
-{
-    spinlock_acquire(&sched_lk);
-    
-    unsigned int curid = get_curid();
-    tcb_set_state(curid, TSTATE_DEAD);
-    
-    unsigned int new_pid = ready_dequeue();
-    if (new_pid == NUM_IDS) {
-        // No thread to run, panic
-        KERN_PANIC("thread_exit: no runnable thread\n");
-    }
-    
-    tcb_set_state(new_pid, TSTATE_RUN);
-    set_curid(new_pid);
-    
-    spinlock_release(&sched_lk);
-    kctx_switch(curid, new_pid);
-}
-
