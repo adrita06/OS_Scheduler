@@ -22,21 +22,6 @@
  * Since the value 0 is reserved for thread id 0, we use NUM_IDS
  * to represent the NULL index.
  */
-struct TCB {
-   /* --- Dynamic Priority Scheduler Fields --- */
-  int priority;        // 0–9
-  int waiting_time;    // aging counter
-  int cpu_ticks;       // ticks used in current slice
-  int cpu_score;       // smoothed CPU usage (integer, not float)
-
-  t_state state;
-  unsigned int prev;
-  unsigned int next;
-  void *channel;
-  struct file *openfiles[NOFILE];  // Open files
-  struct inode *cwd;               // Current working directory
-  struct sig_state sigstate;       // Signal state for this process
-};
 
 struct TCB TCBPool[NUM_IDS];
 

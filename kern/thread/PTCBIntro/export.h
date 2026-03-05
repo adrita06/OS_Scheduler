@@ -3,6 +3,32 @@
 
 #ifdef _KERN_
 
+#include <lib/thread.h>
+#include <kern/fs/stat.h>
+#include <kern/fs/dinode.h>
+#include <kern/fs/inode.h>
+#include <kern/fs/file.h>
+#include <lib/signal.h>
+
+/**
+ * The structure for the thread control block (TCB).
+ */
+struct TCB {
+   /* --- Dynamic Priority Scheduler Fields --- */
+  int priority;        // 0–9
+  int waiting_time;    // aging counter
+  int cpu_ticks;       // ticks used in current slice
+  int cpu_score;       // smoothed CPU usage (integer, not float)
+
+  t_state state;
+  unsigned int prev;
+  unsigned int next;
+  void *channel;
+  struct file *openfiles[NOFILE];  // Open files
+  struct inode *cwd;               // Current working directory
+  struct sig_state sigstate;       // Signal state for this process
+};
+
 unsigned int tcb_get_state(unsigned int pid);
 void tcb_set_state(unsigned int pid, unsigned int state);
 unsigned int tcb_get_prev(unsigned int pid);
