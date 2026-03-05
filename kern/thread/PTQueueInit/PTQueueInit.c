@@ -15,7 +15,7 @@ void tqueue_init(unsigned int mbi_addr)
 	chid = 0;
 	cpu_idx = 0;
 	while (cpu_idx < NUM_CPUS) {
-		while (chid <= NUM_IDS + NPRIO) {
+		while (chid < NUM_IDS + NPRIO ) {
 			tqueue_init_at_id(cpu_idx, chid);
 			chid++;
 		}
@@ -110,4 +110,88 @@ void tqueue_remove(unsigned int chid, unsigned int pid)
 	}
   tcb_set_prev(pid, NUM_IDS);
   tcb_set_next(pid, NUM_IDS);
+}
+
+void ready_enqueue(unsigned int tid, unsigned int priority)
+{
+    unsigned int qid  = READY_QUEUE(priority);
+    unsigned int tail = tqueue_get_tail(qid);
+
+    if (tail == NUM_IDS) {
+        tqueue_set_head(qid, tid);
+        tcb_set_prev(tid, NUM_IDS);   // FIX: no prev when queue was empty
+    } else {
+        tcb_set_next(tail, tid);
+        tcb_set_prev(tid, tail);
+    }
+
+    tqueue_set_tail(qid, tid);
+    tcb_set_next(tid, NUM_IDS);
+
+    tcb_set_priority(tid, priority);
+}
+
+unsigned int ready_dequeue(void)
+{
+    for (int prio = MAX_PRIORITY; prio >= 0; prio--) {
+        unsigned int qid  = READY_QUEUE(prio);
+        unsigned int head = tqueue_get_head(qid);
+
+        if (head != NUM_IDS) {
+            unsigned int next = tcb_get_next(head);
+
+            tqueue_set_head(qid, next);
+            if (next == NUM_IDS)
+                tqueue_set_tail(qid, NUM_IDS);
+            else
+                tcb_set_prev(next, NUM_IDS);
+
+            tcb_set_next(head, NUM_IDS);   // FIX: clean dequeued thread
+            tcb_set_prev(head, NUM_IDS);   // FIX: clean dequeued thread
+            return head;
+        }
+    }
+    return NUM_IDS;
+}
+
+void ready_enqueue(unsigned int tid, unsigned int priority)
+{
+    unsigned int qid  = READY_QUEUE(priority);
+    unsigned int tail = tqueue_get_tail(qid);
+
+    if (tail == NUM_IDS) {
+        tqueue_set_head(qid, tid);
+        tcb_set_prev(tid, NUM_IDS);   // FIX: no prev when queue was empty
+    } else {
+        tcb_set_next(tail, tid);
+        tcb_set_prev(tid, tail);
+    }
+
+    tqueue_set_tail(qid, tid);
+    tcb_set_next(tid, NUM_IDS);
+
+    tcb_set_priority(tid, priority);
+}
+
+unsigned int ready_dequeue(void)
+{
+    for (int prio = MAX_PRIORITY; prio >= 0; prio--) {
+        unsigned int qid  = READY_QUEUE(prio);
+        unsigned int head = tqueue_get_head(qid);
+
+        if (head != NUM_IDS) {
+            unsigned int next = tcb_get_next(head);
+
+            tqueue_set_head(qid, next);
+            if (next == NUM_IDS)
+                tqueue_set_tail(qid, NUM_IDS);
+            else
+                tcb_set_prev(next, NUM_IDS);
+
+            tcb_set_next(head, NUM_IDS);   // FIX: clean dequeued thread
+            tcb_set_prev(head, NUM_IDS);   // FIX: clean dequeued thread
+            return head;
+        }
+    }
+    return NUM_IDS;
 }
