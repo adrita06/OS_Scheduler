@@ -1,99 +1,83 @@
 #include <lib/debug.h>
 #include <lib/types.h>
 #include <lib/monitor.h>
-#include <thread/PThread/export.h>
-#include <dev/devinit.h>
-#include <pcpu/PCPUIntro/export.h>
-#include <lib/kstack.h>
-#include <lib/thread.h>
-#include <lib/x86.h>
+#include <vmm/MPTInit/export.h>
+#include <vmm/MPTKern/export.h>
 
-/* Global definitions for kernel stacks (declared extern in kstack.h) */
-struct kstack bsp_kstack[NUM_CPUS];
-struct kstack proc_kstack[NUM_IDS];
+#define NUM_CHAN		64
+#define TD_STATE_RUN		1
 
 #ifdef TEST
-extern bool test_PKCtxNew(void);
-extern bool test_PTCBInit(void);
-extern bool test_PTQueueInit(void);
-extern bool test_PThread(void);
+extern bool test_MContainer(void);
+extern bool test_MPTIntro(void);
+extern bool test_MPTOp(void);
+extern bool test_MPTComm(void);
+extern bool test_MPTKern(void);
+extern bool test_MPTNew(void);
 #endif
-
-static volatile int cpu_booted = 0;
-static volatile int all_ready = FALSE;
-static void kern_main_ap(void);
-
-extern uint8_t _binary___obj_user_idle_idle_start[];
-extern uint8_t _binary___obj_user_pingpong_ding_start[];
-extern uint8_t _binary___obj_user_shell_shell_start[];
 
 static void
 kern_main (void)
 {
-    KERN_INFO("[BSP KERN] In kernel main.\n\n");
+    KERN_DEBUG("In kernel main.\n\n");
 
-    KERN_INFO("[BSP KERN] Number of CPUs in this system: %d. \n", pcpu_ncpu());
+    #ifdef TEST
+    dprintf("Testing the MContainer layer...\n");
+    if(test_MContainer() == 0)
+      dprintf("All tests passed.\n");
+    else
+      dprintf("Test failed.\n");
+    dprintf("\n");
 
-    int cpu_idx = get_pcpu_idx();
-    unsigned int pid;
+    dprintf("Testing the MPTIntro layer...\n");
+    if(test_MPTIntro() == 0)
+      dprintf("All tests passed.\n");
+    else
+      dprintf("Test failed.\n");
+    dprintf("\n");
 
-    /*
+    dprintf("Testing the MPTOp layer...\n");
+    if(test_MPTOp() == 0)
+      dprintf("All tests passed.\n");
+    else
+      dprintf("Test failed.\n");
+    dprintf("\n");
 
-    int i;
-    all_ready = FALSE;
-    for (i = 1; i < pcpu_ncpu(); i++){
-        KERN_INFO("[BSP KERN] Boot CPU %d .... \n", i);
+    dprintf("Testing the MPTComm layer...\n");
+    if(test_MPTComm() == 0)
+      dprintf("All tests passed.\n");
+    else
+      dprintf("Test failed.\n");
+    dprintf("\n");
 
-        bsp_kstack[i].cpu_idx = i;
-        pcpu_boot_ap(i, kern_main_ap, (uintptr_t) &(bsp_kstack[i]));
+    dprintf("Testing the MPTKern layer...\n");
+    if(test_MPTKern() == 0)
+      dprintf("All tests passed.\n");
+    else
+      dprintf("Test failed.\n");
+    dprintf("\n");
 
-        while (get_pcpu_boot_info(i) == FALSE);
-
-        KERN_INFO("[BSP KERN] done.\n");
-
-    }
-
-    all_ready = TRUE;
-    */
-
-    pid = proc_create (_binary___obj_user_idle_idle_start, 1000);
-    pid = proc_create (_binary___obj_user_shell_shell_start, 1000);
-    KERN_INFO("CPU%d: process shell %d is created.\n", cpu_idx, pid);
-    tqueue_remove (NUM_IDS, pid);
-    tcb_set_state (pid, TSTATE_RUN);
-    set_curid (pid);
-    kctx_switch (0, pid);
-    KERN_PANIC("kern_main_ap() should never reach here.\n");
-}
-
-static void
-kern_main_ap(void)
-{
-    int cpu_idx = get_pcpu_idx();
-    unsigned int pid, pid2;
-
-    set_pcpu_boot_info(cpu_idx, TRUE);
-
-    while (all_ready == FALSE);
-
-    KERN_INFO("[AP%d KERN] kernel_main_ap\n", cpu_idx);
-
-    cpu_booted ++;
+    dprintf("Testing the MPTNew layer...\n");
+    if(test_MPTNew() == 0)
+      dprintf("All tests passed.\n");
+    else
+      dprintf("Test failed.\n");
+    dprintf("\nTest complete. Please Use Ctrl-a x to exit qemu.");
+    #else
+    monitor(NULL);
+    #endif
 }
 
 void
 kern_init (uintptr_t mbi_addr)
 {
-    thread_init(mbi_addr);
+    #ifdef TEST
+    pdir_init_kern(mbi_addr);
+    #else
+    paging_init (mbi_addr);
+    #endif
 
-    KERN_INFO("[BSP KERN] Kernel initialized.\n");
+    KERN_DEBUG("Kernel initialized.\n");
 
     kern_main ();
-}
-
-void
-kern_init_ap(void (*f)(void))
-{
-	devinit_ap();
-	f();
 }
