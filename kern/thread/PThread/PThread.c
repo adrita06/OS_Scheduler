@@ -220,3 +220,27 @@ void thread_wakeup(void *chan)
     }
     spinlock_release(&sched_lk);
 }
+
+void thread_exit(void)
+{
+    unsigned int old_cur_pid;
+    unsigned int new_cur_pid;
+
+    spinlock_acquire(&sched_lk);
+
+    old_cur_pid = get_curid();
+    // Do NOT set state to READY or enqueue - process is being terminated
+
+    new_cur_pid = ready_dequeue();
+    if (new_cur_pid == NUM_IDS) {
+        // No other threads - this shouldn't happen in normal operation
+        KERN_PANIC("thread_exit: no threads to switch to!\n");
+    }
+
+    tcb_set_state(new_cur_pid, TSTATE_RUN);
+    set_curid(new_cur_pid);
+
+    spinlock_release(&sched_lk);
+    kctx_switch(old_cur_pid, new_cur_pid);
+    // Should never return here
+}
