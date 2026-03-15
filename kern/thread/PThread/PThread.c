@@ -12,7 +12,7 @@
 #define MAX_PRIORITY 9
 #define MIN_PRIORITY 0
 #define AGING_THRESHOLD  10   // boost after waiting 10 time slices
-
+#define READY_QUEUE(p) (NUM_IDS + (p))
 
 #include "import.h"
 
@@ -101,16 +101,16 @@ void sched_update(void)
 
         int prio = tcb_get_priority(pid);
         if (new_score >= CPU_HIGH) {
-            if (prio < MAX_PRIORITY) prio++;
+            if (prio > MAX_PRIORITY) prio++;
         } else if (new_score <= CPU_LOW) {
-            if (prio > MIN_PRIORITY) prio--;
+            if (prio < MIN_PRIORITY) prio--;
         }
         tcb_set_priority(pid, prio);
 
         /* -------- AGING (NEW) -------- */
         int q;
         for (q = MIN_PRIORITY; q < MAX_PRIORITY; q++) {
-            unsigned int qid  = NUM_IDS + q;
+            unsigned int qid  = READY_QUEUE(q);
             unsigned int tid  = tqueue_get_head(qid);
 
             while (tid != NUM_IDS) {
@@ -121,7 +121,7 @@ void sched_update(void)
                     TCBPool[tid].waiting_time = 0;
                     tqueue_remove(qid, tid);               // remove from current queue
                     tcb_set_priority(tid, q + 1);          // boost priority
-                    tqueue_enqueue(NUM_IDS + q + 1, tid);  // enqueue at higher level
+                    tqueue_enqueue(READY_QUEUE(q+1), tid);  // enqueue at higher level
                 }
                 tid = next_tid;
             }

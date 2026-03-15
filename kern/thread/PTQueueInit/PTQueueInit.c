@@ -2,6 +2,7 @@
 
 #include "import.h"
 
+
 /**
  * Initializes all the thread queues with
  * tqueue_init_at_id.
@@ -46,7 +47,10 @@ void tqueue_enqueue(unsigned int chid, unsigned int pid)
 		tcb_set_prev(pid, tail);
 		tcb_set_next(pid, NUM_IDS);
 		tqueue_set_tail(chid, pid);
-	}
+	}    
+	
+	
+dprintf("enqueue chid=%d pid=%d head=%d tail=%d\n", chid, pid, tqueue_get_head(chid), tqueue_get_tail(chid));dprintf("enqueue chid=%d pid=%d head=%d tail=%d\n", chid, pid, tqueue_get_head(chid), tqueue_get_tail(chid));
 }
 
 /**
@@ -103,9 +107,8 @@ void tqueue_remove(unsigned int chid, unsigned int pid)
 			tcb_set_next(prev, NUM_IDS);
 			tqueue_set_tail(chid, prev);
 		} else {
-			if (prev != next)
-				tcb_set_next(prev, next);
-			tcb_set_prev(next, prev);
+				tcb_set_next(prev,next);
+				tcb_set_prev(next,prev);
 		}
 	}
   tcb_set_prev(pid, NUM_IDS);
