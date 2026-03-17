@@ -3,9 +3,10 @@
 #include <thread/PTCBIntro/export.h>
 #include <thread/PTQueueIntro/export.h>
 #include "export.h"
+#include "import.h"
 
 int PTQueueInit_test1()
-{
+{                                   
     unsigned int i;
     for (i = 0; i < NUM_IDS + NPRIO; i++) {
         if (tqueue_get_head(i) != NUM_IDS || tqueue_get_tail(i) != NUM_IDS) {
@@ -13,7 +14,7 @@ int PTQueueInit_test1()
             return 1;
         }
     }
-    dprintf("test 1 passed.\n");
+    dprintf("ptqueueinit test 1 passed.\n");
     return 0;
 }
 
@@ -89,5 +90,7 @@ int PTQueueInit_test_own()
 
 int test_PTQueueInit()
 {
-    return PTQueueInit_test1() + PTQueueInit_test2() + PTQueueInit_test_own();
+    int failed = PTQueueInit_test1() + PTQueueInit_test2() + PTQueueInit_test_own();
+
+    return (failed == 0)?1:0;
 }

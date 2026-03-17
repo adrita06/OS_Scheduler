@@ -39,5 +39,6 @@ int PTCBInit_test_own()
 
 int test_PTCBInit()
 {
-  return PTCBInit_test1() + PTCBInit_test_own();
+  int failed = PTCBInit_test1() + PTCBInit_test_own();
+  return (failed==0)?1:0;
 }

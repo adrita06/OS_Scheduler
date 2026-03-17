@@ -44,7 +44,7 @@ int PThread_test_own()
     }
 
     /* Test 2: default priority should be 5 */
-    if (tcb_get_priority(10) != 5) {
+    if (tcb_get_priority(20) != 5) {
         dprintf("own test 5 failed: default priority should be 5\n");
         return 1;
     }
@@ -65,5 +65,6 @@ int PThread_test_own()
 
 int test_PThread()
 {
-    return PThread_test_own();
+    int failed = PThread_test_own();
+    return (failed==0)?1:0;
 }

@@ -4,7 +4,7 @@
 #ifdef _KERN_
 
 void paging_init(unsigned int);
-void tcb_init_at_id(unsigned int);
+void tcb_init_at_id(unsigned int cpu_idx, unsigned int pid);
 
 #endif /* _KERN_ */
 

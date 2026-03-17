@@ -3,6 +3,8 @@
 
 #ifdef _KERN_
 
+#define READY_QUEUE(p)  (NUM_IDS + (p))
+
 void tqueue_init(unsigned int mbi_addr);
 void tqueue_enqueue(unsigned int chid, unsigned int pid);
 unsigned int tqueue_dequeue(unsigned int chid);

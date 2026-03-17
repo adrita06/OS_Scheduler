@@ -15,7 +15,7 @@ void tcb_init(unsigned int mbi_addr)
 	pid = 0;
 
   while (pid < NUM_IDS) {
-    tcb_init_at_id(pid);
+    tcb_init_at_id(0,pid);
     pid++;
   }
 }

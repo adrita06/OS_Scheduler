@@ -52,5 +52,6 @@ int PKCtxNew_test_own()
 
 int test_PKCtxNew()
 {
-  return PKCtxNew_test1() + PKCtxNew_test_own();
+  int failed = PKCtxNew_test1() + PKCtxNew_test_own();
+  return (failed==0)?1:0;
 }
