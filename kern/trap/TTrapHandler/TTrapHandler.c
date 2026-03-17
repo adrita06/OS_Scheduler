@@ -241,7 +241,7 @@ static void terminate_process(unsigned int pid)
     tcb_set_state(pid, TSTATE_DEAD);
 
     // Remove from ready queue (NUM_IDS is the ready queue)
-    tqueue_remove(NUM_IDS, pid);
+    tqueue_remove(READY_QUEUE(tcb_get_priority(pid)), pid); 
 
     // Clear any pending signals
     tcb_set_pending_signals(pid, 0);
