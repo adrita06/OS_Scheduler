@@ -59,21 +59,34 @@ kern_main (void)
     all_ready = TRUE;
     */
    #ifdef TEST
+    dprintf("------------------\n");
+    dprintf("| PKCtxNew TESTS |\n");
+    dprintf("------------------\n");
     if (test_PKCtxNew()) {
         KERN_INFO("PKCtxNew test passed.\n");
     } else {
         KERN_INFO("PKCtxNew test failed.\n");
     }
+    dprintf("------------------\n");
+    dprintf("| PTCBInit TESTS |\n");
+    dprintf("------------------\n");
     if (test_PTCBInit()) {
         KERN_INFO("PTCBInit test passed.\n");
     } else {
         KERN_INFO("PTCBInit test failed.\n");
     }
+    dprintf("------------------\n");
+    dprintf("| PTQueueInit TESTS |\n");
+    dprintf("------------------\n");
     if (test_PTQueueInit()) {
         KERN_INFO("PTQueueInit test passed.\n");
     } else {
         KERN_INFO("PTQueueInit test failed.\n");
     }
+
+    dprintf("------------------\n");
+    dprintf("| PThread TESTS |\n");
+    dprintf("------------------\n");
     if (test_PThread()) {
         KERN_INFO("PThread test passed.\n");
     } else {

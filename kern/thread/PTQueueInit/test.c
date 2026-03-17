@@ -83,6 +83,20 @@ int PTQueueInit_test_own()
         dprintf("own test failed: expected pid 7, got %d\n", pid);
         return 1;
     }
+    ready_enqueue(11,99);
+    if(tcb_get_priority(11)!= MAX_PRIORITY){
+        dprintf("own test failed: priority clamping to MAX failed\n");
+        return 1;
+    }
+    ready_dequeue();
+    ready_enqueue(12,-1);
+    if(tcb_get_priority(12)!= MIN_PRIORITY){
+        dprintf("own test failed: priority clamping to MIN failed\n");
+        return 1;
+    }
+    ready_dequeue();
+
+
 
     dprintf("own test passed.\n");
     return 0;
