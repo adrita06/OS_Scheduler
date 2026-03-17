@@ -7,7 +7,7 @@
 int PTQueueInit_test1()
 {
     unsigned int i;
-    for (i = 0; i < NUM_IDS; i++) {
+    for (i = 0; i < NUM_IDS + NPRIO; i++) {
         if (tqueue_get_head(i) != NUM_IDS || tqueue_get_tail(i) != NUM_IDS) {
             dprintf("test 1 failed.\n");
             return 1;
@@ -60,6 +60,30 @@ int PTQueueInit_test2()
 
 int PTQueueInit_test_own()
 {
+    unsigned int pid;
+
+    // Enqueue at different priorities and verify dequeue order (highest first)
+    ready_enqueue(5, 3);   // pid 5 at priority 3
+    ready_enqueue(6, 7);   // pid 6 at priority 7
+    ready_enqueue(7, 1);   // pid 7 at priority 1
+
+    pid = ready_dequeue();
+    if (pid != 6) {        // priority 7 should come out first
+        dprintf("own test failed: expected pid 6, got %d\n", pid);
+        return 1;
+    }
+    pid = ready_dequeue();
+    if (pid != 5) {        // priority 3 next
+        dprintf("own test failed: expected pid 5, got %d\n", pid);
+        return 1;
+    }
+    pid = ready_dequeue();
+    if (pid != 7) {        // priority 1 last
+        dprintf("own test failed: expected pid 7, got %d\n", pid);
+        return 1;
+    }
+
+    dprintf("own test passed.\n");
     return 0;
 }
 

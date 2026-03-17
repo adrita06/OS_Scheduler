@@ -83,7 +83,7 @@ void sched_update(void)
     sched_ticks[cpu] += (1000 / LAPIC_TIMER_INTR_FREQ);
     TCBPool[pid].cpu_ticks++;
 
-    if (sched_ticks[cpu] > SCHED_SLICE) {
+    if (sched_ticks[cpu] >= SCHED_SLICE) {
 
         sched_ticks[cpu] = 0;
 
@@ -101,9 +101,9 @@ void sched_update(void)
 
         int prio = tcb_get_priority(pid);
         if (new_score >= CPU_HIGH) {
-            if (prio > MAX_PRIORITY) prio++;
+            if (prio > MIN_PRIORITY) prio--;
         } else if (new_score <= CPU_LOW) {
-            if (prio < MIN_PRIORITY) prio--;
+            if (prio < MAX_PRIORITY) prio++;
         }
         tcb_set_priority(pid, prio);
 
@@ -119,10 +119,12 @@ void sched_update(void)
 
                 if (TCBPool[tid].waiting_time >= AGING_THRESHOLD) {
                     TCBPool[tid].waiting_time = 0;
-                    tqueue_remove(qid, tid);               // remove from current queue
-                    tcb_set_priority(tid, q + 1);          // boost priority
-                    tqueue_enqueue(READY_QUEUE(q+1), tid);  // enqueue at higher level
-                }
+                    if (q + 1 <= MAX_PRIORITY){
+                        tqueue_remove(qid, tid);               // remove from current queue
+                        tcb_set_priority(tid, q + 1);          // boost priority
+                        tqueue_enqueue(READY_QUEUE(q+1), tid);  // enqueue at higher level
+                    }
+                    }
                 tid = next_tid;
             }
         }

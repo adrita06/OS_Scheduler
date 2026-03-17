@@ -1,5 +1,5 @@
-#ifndef _KERN_THREAD_PTHREAD_H_
-#define _KERN_THREAD_PTHREAD_H_
+#ifndef _KERN_THREAD_PTHREAD_IMPORT_H_ 
+#define _KERN_THREAD_PTHREAD_IMPORT_H_  
 
 #ifdef _KERN_
 
@@ -14,11 +14,20 @@ void tqueue_init(unsigned int mbi_addr);
 void tqueue_enqueue(unsigned int chid, unsigned int pid);
 unsigned int tqueue_dequeue(unsigned int chid);
 
-void ready_enqueue(unsigned int tid, unsigned int priority);  // ADD
+void ready_enqueue(unsigned int tid, int priority);  // ADD
 unsigned int ready_dequeue(void);                             // ADD
 
 unsigned int get_curid(void);
 void set_curid(unsigned int curid);
+
+// Add this to import.h alongside the other tcb_ declarations:
+int tcb_get_priority(unsigned int pid);
+void tcb_set_priority(unsigned int pid, int prio);
+
+unsigned int tcb_get_state(unsigned int pid);  // needed for thread_wakeup
+unsigned int tqueue_get_head(unsigned int chid); // needed for aging loop in sched_update
+unsigned int tcb_get_next(unsigned int pid);     // needed for aging loop
+void tqueue_remove(unsigned int chid, unsigned int pid); // needed for aging loop
 
 #endif /* _KERN_ */
 

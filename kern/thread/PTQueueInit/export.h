@@ -8,7 +8,7 @@ void tqueue_enqueue(unsigned int chid, unsigned int pid);
 unsigned int tqueue_dequeue(unsigned int chid);
 void tqueue_remove(unsigned int chid, unsigned int pid);
 
-void ready_enqueue(unsigned int tid, unsigned int priority);
+void ready_enqueue(unsigned int tid, int priority);
 unsigned int ready_dequeue(void);
 
 #endif /* _KERN_ */
