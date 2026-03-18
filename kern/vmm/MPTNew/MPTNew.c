@@ -3,6 +3,8 @@
 
 #include "import.h"
 
+#define IDLE_TID_BASE (NUM_IDS - NUM_CPUS)
+
 /**
  * This function will be called when there's no mapping found in the page structure
  * for the given virtual address [vaddr], e.g., by the page fault handler when
@@ -39,7 +41,10 @@ unsigned int alloc_page (unsigned int proc_index, unsigned int vaddr, unsigned i
 unsigned int alloc_mem_quota (unsigned int id, unsigned int quota)
 {
 	unsigned int child;
+  child = id * MAX_CHILDREN + 1 + container_get_nchildren(id);
+  if (child >= IDLE_TID_BASE)
+    return NUM_IDS;
+
   child = container_split (id, quota);
 	return child;
 }
-

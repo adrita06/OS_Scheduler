@@ -12,8 +12,8 @@ void tqueue_remove(unsigned int chid, unsigned int pid);
 
 void ready_enqueue(unsigned int tid, int priority);
 unsigned int ready_dequeue(void);
+void ready_remove(unsigned int tid);
 
 #endif /* _KERN_ */
 
 #endif /* !_KERN_THREAD_PTQUEUEINIT_H_ */
-

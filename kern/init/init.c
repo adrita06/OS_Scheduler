@@ -2,8 +2,12 @@
 #include <lib/types.h>
 #include <lib/monitor.h>
 #include <thread/PThread/export.h>
+#include <thread/PTCBIntro/export.h>
+#include <thread/PTQueueInit/export.h>
+#include <thread/PCurID/export.h>
 #include <dev/devinit.h>
 #include <pcpu/PCPUIntro/export.h>
+#include <proc/PProc/export.h>
 #include <lib/kstack.h>
 #include <lib/thread.h>
 #include <lib/x86.h>
@@ -26,6 +30,10 @@ static volatile int cpu_booted = 0;
 static volatile int all_ready = FALSE;
 static void kern_main_ap(void);
 
+uint32_t pcpu_ncpu(void);
+int pcpu_boot_ap(uint32_t cpu_idx, void (*f)(void), uintptr_t stack_addr);
+void kctx_switch(unsigned int from_pid, unsigned int to_pid);
+
 extern uint8_t _binary___obj_user_idle_idle_start[];
 extern uint8_t _binary___obj_user_pingpong_ding_start[];
 extern uint8_t _binary___obj_user_shell_shell_start[];
@@ -39,8 +47,6 @@ kern_main (void)
 
     int cpu_idx = get_pcpu_idx();
     unsigned int pid;
-
-    /*
 
     int i;
     all_ready = FALSE;
@@ -56,8 +62,6 @@ kern_main (void)
 
     }
 
-    all_ready = TRUE;
-    */
    #ifdef TEST
     dprintf("------------------\n");
     dprintf("| PKCtxNew TESTS |\n");
@@ -98,11 +102,19 @@ kern_main (void)
     pid = proc_create (_binary___obj_user_idle_idle_start, 1000);
     pid = proc_create (_binary___obj_user_shell_shell_start, 1000);
     KERN_INFO("CPU%d: process shell %d is created.\n", cpu_idx, pid);
-    tqueue_remove (NUM_IDS, pid);
-    tcb_set_state (pid, TSTATE_RUN);
-    set_curid (pid);
-    kctx_switch (0, pid);
-    KERN_PANIC("kern_main_ap() should never reach here.\n");
+
+    /*
+     * Preserve the original BSP startup behavior:
+     * CPU0 enters the shell directly, while the scheduler's per-CPU idle
+     * loops are still available for load balancing when a CPU has no work.
+     */
+    ready_remove(pid);
+    tcb_set_state(pid, TSTATE_RUN);
+    set_curid(pid);
+
+    all_ready = TRUE;
+    kctx_switch(0, pid);
+    KERN_PANIC("kern_main() should never reach here.\n");
 }
 
 static void
@@ -118,6 +130,7 @@ kern_main_ap(void)
     KERN_INFO("[AP%d KERN] kernel_main_ap\n", cpu_idx);
 
     cpu_booted ++;
+    thread_run_idle();
 }
 
 void

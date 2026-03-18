@@ -450,8 +450,8 @@ void sys_kill(tf_t *tf)
         // Set state to DEAD
         tcb_set_state(pid, TSTATE_DEAD);
 
-        // Remove from ready queue
-        tqueue_remove(NUM_IDS, pid);
+        // Remove from whichever CPU-local ready queue currently owns the thread.
+        ready_remove(pid);
 
         // Clear any pending signals
         tcb_set_pending_signals(pid, 0);

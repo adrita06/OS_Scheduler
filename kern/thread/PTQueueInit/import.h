@@ -16,12 +16,19 @@ void tcb_init(unsigned int mbi_addr);
 
 void tcb_set_priority(unsigned int pid, int priority);
 int tcb_get_priority(unsigned int pid);
+void tcb_set_ready_cpu(unsigned int pid, int cpu_idx);
+int tcb_get_ready_cpu(unsigned int pid);
 
 unsigned int tqueue_get_head(unsigned int chid);
 void tqueue_set_head(unsigned int chid, unsigned int head);
 unsigned int tqueue_get_tail(unsigned int chid);
 void tqueue_set_tail(unsigned int chid, unsigned int tail);
+unsigned int tqueue_get_head_at(unsigned int cpu_idx, unsigned int chid);
+void tqueue_set_head_at(unsigned int cpu_idx, unsigned int chid, unsigned int head);
+unsigned int tqueue_get_tail_at(unsigned int cpu_idx, unsigned int chid);
+void tqueue_set_tail_at(unsigned int cpu_idx, unsigned int chid, unsigned int tail);
 void tqueue_init_at_id(unsigned int cpu_idx, unsigned int chid);
+int get_pcpu_idx(void);
 #endif /* _KERN_ */
 
 #endif /* !_KERN_THREAD_PTQueueINIT_H_ */

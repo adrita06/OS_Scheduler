@@ -64,6 +64,7 @@ void tcb_init_at_id(unsigned int cpu_idx, unsigned int pid)
 	TCBPool[pid].waiting_time = 0;
 	TCBPool[pid].cpu_ticks = 0;
 	TCBPool[pid].cpu_score = 0;
+	TCBPool[pid].ready_cpu = -1;
 
 	TCBPool[pid].state = TSTATE_DEAD;
 	TCBPool[pid].prev = NUM_IDS;
@@ -190,4 +191,14 @@ int tcb_get_priority(unsigned int pid)
 void tcb_set_priority(unsigned int pid, int prio)
 {
     TCBPool[pid].priority = prio;
+}
+
+int tcb_get_ready_cpu(unsigned int pid)
+{
+    return TCBPool[pid].ready_cpu;
+}
+
+void tcb_set_ready_cpu(unsigned int pid, int cpu_idx)
+{
+    TCBPool[pid].ready_cpu = cpu_idx;
 }
