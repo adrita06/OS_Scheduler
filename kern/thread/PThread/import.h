@@ -28,6 +28,8 @@ unsigned int tcb_get_state(unsigned int pid);  // needed for thread_wakeup
 unsigned int tqueue_get_head(unsigned int chid); // needed for aging loop in sched_update
 unsigned int tcb_get_next(unsigned int pid);     // needed for aging loop
 void tqueue_remove(unsigned int chid, unsigned int pid); // needed for aging loop
+void pause(void);
+int get_pcpu_idx(void);
 
 #endif /* _KERN_ */
 

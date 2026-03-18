@@ -19,6 +19,7 @@ struct TCB {
   int waiting_time;    // aging counter
   int cpu_ticks;       // ticks used in current slice
   int cpu_score;       // smoothed CPU usage (integer, not float)
+  int ready_cpu;       // CPU whose ready queue currently owns this thread
 
   t_state state;
   unsigned int prev;
@@ -61,8 +62,9 @@ void* tcb_get_channel(unsigned int pid);
 
 int tcb_get_priority(unsigned int pid);
 void tcb_set_priority(unsigned int pid, int prio);
+int tcb_get_ready_cpu(unsigned int pid);
+void tcb_set_ready_cpu(unsigned int pid, int cpu_idx);
 
 #endif /* _KERN_ */
 
 #endif /* !_KERN_THREAD_PTCBINTRO_H_ */
-

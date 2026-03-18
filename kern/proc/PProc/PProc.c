@@ -26,6 +26,8 @@ unsigned int proc_create(void *elf_addr, unsigned int quota)
 
   id = get_curid();
   pid = thread_spawn((void *) proc_start_user, id, quota);
+  if (pid == NUM_IDS)
+    return NUM_IDS;
 
   elf_load(elf_addr, pid);
 

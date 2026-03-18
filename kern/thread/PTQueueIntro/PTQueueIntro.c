@@ -34,9 +34,19 @@ unsigned int tqueue_get_head(unsigned int chid)
 	return TQueuePool[get_pcpu_idx()][chid].head;
 }
 
+unsigned int tqueue_get_head_at(unsigned int cpu_idx, unsigned int chid)
+{
+	return TQueuePool[cpu_idx][chid].head;
+}
+
 void tqueue_set_head(unsigned int chid, unsigned int head)
 {
 	TQueuePool[get_pcpu_idx()][chid].head = head;
+}
+
+void tqueue_set_head_at(unsigned int cpu_idx, unsigned int chid, unsigned int head)
+{
+	TQueuePool[cpu_idx][chid].head = head;
 }
 
 unsigned int tqueue_get_tail(unsigned int chid)
@@ -44,9 +54,19 @@ unsigned int tqueue_get_tail(unsigned int chid)
 	return TQueuePool[get_pcpu_idx()][chid].tail;
 }
 
+unsigned int tqueue_get_tail_at(unsigned int cpu_idx, unsigned int chid)
+{
+	return TQueuePool[cpu_idx][chid].tail;
+}
+
 void tqueue_set_tail(unsigned int chid, unsigned int tail)
 {
 	TQueuePool[get_pcpu_idx()][chid].tail = tail;
+}
+
+void tqueue_set_tail_at(unsigned int cpu_idx, unsigned int chid, unsigned int tail)
+{
+	TQueuePool[cpu_idx][chid].tail = tail;
 }
 
 void tqueue_init_at_id(unsigned int cpu_idx, unsigned int chid)
@@ -54,4 +74,3 @@ void tqueue_init_at_id(unsigned int cpu_idx, unsigned int chid)
 	TQueuePool[cpu_idx][chid].head = NUM_IDS;
 	TQueuePool[cpu_idx][chid].tail = NUM_IDS;
 }
-

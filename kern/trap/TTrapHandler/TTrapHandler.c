@@ -240,8 +240,8 @@ static void terminate_process(unsigned int pid)
     // Set state to DEAD
     tcb_set_state(pid, TSTATE_DEAD);
 
-    // Remove from ready queue (NUM_IDS is the ready queue)
-    tqueue_remove(READY_QUEUE(tcb_get_priority(pid)), pid); 
+    // Remove from whichever CPU-local ready queue currently owns the thread.
+    ready_remove(pid);
 
     // Clear any pending signals
     tcb_set_pending_signals(pid, 0);

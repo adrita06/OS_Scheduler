@@ -7,6 +7,7 @@ void pt_spinlock_acquire(void);
 void pt_spinlock_release(void);
 unsigned int container_alloc(unsigned int);
 unsigned int container_split(unsigned int, unsigned int);
+unsigned int container_get_nchildren(unsigned int);
 unsigned int map_page(unsigned int, unsigned int, unsigned int, unsigned int);
 
 #endif /* _KERN_ */
