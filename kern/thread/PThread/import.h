@@ -1,5 +1,14 @@
-#ifndef _KERN_THREAD_PTHREAD_IMPORT_H_ 
-#define _KERN_THREAD_PTHREAD_IMPORT_H_  
+#ifndef _KERN_THREAD_PTHREAD_IMPORT_H_
+#define _KERN_THREAD_PTHREAD_IMPORT_H_
+
+#define AGING_THRESHOLD 10
+#define MAX_PRIORITY    9
+#define MIN_PRIORITY    0
+#define ALPHA           50
+#define CPU_HIGH        75
+#define CPU_LOW         25
+#define SCHED_SLICE     10
+
 
 #ifdef _KERN_
 
