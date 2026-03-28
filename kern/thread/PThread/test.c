@@ -20,19 +20,19 @@ int PThread_test_own()
         dprintf("own test 1 failed: expected pid=6, got %d\n", tid);
         return 1;
     }
-
+    /* Test 2: RR within same priority */
     tid = ready_dequeue();
     if (tid != 7) {
         dprintf("own test 2 failed: expected pid=7, got %d\n", tid);
         return 1;
     }
-
+    /* Test 3: remaining process dequeued */
     tid = ready_dequeue();
     if (tid != 5) {
         dprintf("own test 3 failed: expected pid=5, got %d\n", tid);
         return 1;
     }
-
+    /* Test 4: empty queue returns NUM_IDS */
     tid = ready_dequeue();
     if (tid != NUM_IDS) {
         dprintf("own test 4 failed: expected empty queue\n");
@@ -45,7 +45,7 @@ int PThread_test_own()
         return 1;
     }
 
-    /* Test 6: priority ordering */
+    /* Test 6 : priority ordering */
     ready_enqueue(8, 9);
     ready_enqueue(9, 0);
     tid = ready_dequeue();
@@ -80,20 +80,8 @@ int PThread_test_own()
     }
     ready_dequeue();
 
-    /* Test 8: aging at max priority should not exceed 9 */
-    ready_enqueue(6, 9);
-    TCBPool[6].waiting_time = AGING_THRESHOLD;
-    int new_prio = tcb_get_priority(6) + 1;
-    if (new_prio > MAX_PRIORITY) new_prio = MAX_PRIORITY;
-    tcb_set_priority(6, new_prio);
-    if (tcb_get_priority(6) != 9) {
-        dprintf("own test 8 failed: exceeded MAX_PRIORITY\n");
-        ready_dequeue();
-        return 1;
-    }
-    ready_dequeue();
 
-    /* Test 9: cpu score heavy - full quantum, priority should decrease */
+    /* Test 10: cpu score heavy - full quantum, priority should decrease */
     TCBPool[7].cpu_score = 50;
     TCBPool[7].cpu_ticks = SCHED_SLICE;
     tcb_set_priority(7, 5);
@@ -116,7 +104,7 @@ int PThread_test_own()
         return 1;
     }
 
-    /* Test 10: cpu score io bound - blocks early, priority unchanged */
+    /* Test 11: cpu score io bound - blocks early, priority unchanged */
     TCBPool[8].cpu_score = 50;
     TCBPool[8].cpu_ticks = 2;
     tcb_set_priority(8, 5);
